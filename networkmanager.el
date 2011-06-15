@@ -55,6 +55,7 @@
       (run-hooks 'networkmanager-connect-hook)
     (run-hooks 'networkmanager-disconnect-hook)))
 
+;;;###autoload
 (defun networkmanager-connect-p ()
   "Return non-nil if you connect networks."
   (networkmanager-state-connect-p
@@ -64,6 +65,7 @@
 		      networkmanager-interface
 		      "State")))
 
+;;;###autoload
 (define-minor-mode networkmanager-mode
   "Integration with NetworkManager."
   :global t
@@ -81,4 +83,8 @@
       (setq networkmanager-dbus-registration nil))))
 
 (provide 'networkmanager)
+
+;; Local Variables:
+;; generated-autoload-file: "networkmanager-loaddefs.el"
+;; End:
 ;;; networkmanager.el end here
