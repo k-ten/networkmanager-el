@@ -84,7 +84,4 @@
 
 (provide 'networkmanager)
 
-;; Local Variables:
-;; generated-autoload-file: "networkmanager-loaddefs.el"
-;; End:
 ;;; networkmanager.el end here
