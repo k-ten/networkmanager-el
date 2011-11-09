@@ -44,16 +44,40 @@
 (defconst networkmanager-path "/org/freedesktop/NetworkManager")
 (defconst networkmanager-interface "org.freedesktop.NetworkManager")
 
+(defun networkmanager-version ()
+  (string-to-number (dbus-get-property :system
+				       networkmanager-service
+				       networkmanager-path
+				       networkmanager-interface
+				       "Version")))
+
+(if (< (networkmanager-version) 0.9)
+    (progn
+      (defconst networkmanager-state-unknown 0)
+      (defconst networkmanager-state-asleep 1)
+      (defconst networkmanager-state-connecting 2)
+      (defconst networkmanager-state-connected 3)
+      (defconst networkmanager-state-disconnected 4))
+  (defconst networkmanager-state-unknown 0)
+  (defconst networkmanager-state-asleep 10)
+  (defconst networkmanager-state-disconnected 20)
+  (defconst networkmanager-state-disconnecting 30)
+  (defconst networkmanager-state-connecting 40)
+  (defconst networkmanager-state-connected-local 50)
+  (defconst networkmanager-state-connected-site 60)
+  (defconst networkmanager-state-global 70))
+
 (defvar networkmanager-dbus-registration nil)
 
 (defun networkmanager-state-connect-p (state)
-  (and (numberp state)
-       (= state 3)))
+  (if (< (networkmanager-version) 0.9)
+      (= networkmanager-state-connected state)
+    (<= networkmanager-state-connected-local state)))
 
 (defun networkmanager-dbus-signal-handler (state)
-  (if (networkmanager-state-connect-p state)
-      (run-hooks 'networkmanager-connect-hook)
-    (run-hooks 'networkmanager-disconnect-hook)))
+  (run-hooks (if (networkmanager-state-connect-p state)
+		 'networkmanager-connect-hook
+	       'networkmanager-disconnect-hook)))
 
 ;;;###autoload
 (defun networkmanager-connect-p ()
